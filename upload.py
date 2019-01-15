@@ -37,7 +37,7 @@ def upload(full_path):
     file_key = full_path[len_resource_path:]
     if not file_key:
         return
-    logger.info('processing {}'.format(file_key))
+
     global resource_file_map
 
     # ignore same file
@@ -102,5 +102,5 @@ def download_react(react_version: str):
 
 
 if __name__ == '__main__':
-    download_react('16.7.0')
-    # main()
+    # download_react('16.7.0')
+    main()
