@@ -1,1 +1,12 @@
-{"favicon.ico": "596ee3f874fadc45733e52875b6c0586", "logo/1143x1023/blue.png": "409d91ee3880ee906c54deff25db0888", "logo/1143x1023/blue_shadow.png": "10f076a68f817cc5092d063b59d6ed6b", "logo/1143x1023/miku.png": "aac1f0ba6d4d35bca18ce2ba543f15ff", "logo/1694x407/blue.png": "93cdb2dede12f4a82d5767ead4dba661", "logo/1694x407/white.png": "5d3d494c2418441ca3eee7e8a3147ae9", "logo/256x256/blue.png": "b0f9d6dbd74e0ecd1e22314f8286a039", "logo/256x256/white.png": "ad8c9901996bcdd3628ffdda754bd203", "react/v16.7.0/react-dom.production.min.js": "f51825080bdea33df6874f3ac1a87bcc", "react/v16.7.0/react.production.min.js": "6797a59ed573f8a4c1c74db6e354f2eb"}
+{
+    "favicon.ico": "596ee3f874fadc45733e52875b6c0586",
+    "logo/1143x1023/blue.png": "409d91ee3880ee906c54deff25db0888",
+    "logo/1143x1023/blue_shadow.png": "10f076a68f817cc5092d063b59d6ed6b",
+    "logo/1143x1023/miku.png": "aac1f0ba6d4d35bca18ce2ba543f15ff",
+    "logo/1694x407/blue.png": "93cdb2dede12f4a82d5767ead4dba661",
+    "logo/1694x407/white.png": "5d3d494c2418441ca3eee7e8a3147ae9",
+    "logo/256x256/blue.png": "b0f9d6dbd74e0ecd1e22314f8286a039",
+    "logo/256x256/white.png": "ad8c9901996bcdd3628ffdda754bd203",
+    "react/v16.7.0/react-dom.production.min.js": "f51825080bdea33df6874f3ac1a87bcc",
+    "react/v16.7.0/react.production.min.js": "6797a59ed573f8a4c1c74db6e354f2eb"
+}

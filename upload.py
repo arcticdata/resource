@@ -79,7 +79,7 @@ def main():
     listdir_iter(resource_base_path)
 
     with open(resource_lock_file, 'w') as fp:
-        fp.write(json.dumps(resource_file_map, ensure_ascii=False, sort_keys=True))
+        fp.write(json.dumps(resource_file_map, ensure_ascii=False, sort_keys=True, indent=4))
     logger.info('successfully updated resource lock file.')
 
 
