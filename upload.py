@@ -85,11 +85,13 @@ def main():
 
 def download_react(react_version: str):
     react_version = react_version.strip()
-    url = 'https://unpkg.com/react@{}/umd/{}'
+    base_url = 'https://unpkg.com/{m}@{v}/umd/{m}.production.min.js'
     version_path = os.path.join(resource_base_path, 'react', 'v{}'.format(react_version))
     os.makedirs(version_path, exist_ok=True)
-    for filename in ['react.production.min.js', 'react-dom.production.min.js']:
-        r = requests.get(url.format(react_version, filename), stream=True)
+    for module in ['react', 'react-dom']:
+        url = base_url.format(m=module, v=react_version)
+        r = requests.get(url, stream=True)
+        filename = '{}.production.min.js'.format(module)
         if r.status_code == 200:
             with open(os.path.join(version_path, filename), 'wb') as f:
                 r.raw.decode_content = True
@@ -101,4 +103,4 @@ def download_react(react_version: str):
 
 if __name__ == '__main__':
     download_react('16.7.0')
-    main()
+    # main()
