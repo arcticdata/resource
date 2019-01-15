@@ -3,7 +3,7 @@ import json
 import logging
 import os
 
-from qcloud_cos import CosConfig, CosS3Client
+from qcloud_cos import CosConfig, CosS3Client, CosServiceError
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -41,10 +41,13 @@ def upload(full_path):
     # ignore same file
     if file_key in resource_file_map:
         etag = resource_file_map[file_key]
-        response = client.head_object(Bucket=bucket_url, Key=file_key)
-        if get_etag(response) == etag:
-            logger.info('skipped {}[{}]'.format(file_key, etag))
-            return
+        try:
+            response = client.head_object(Bucket=bucket_url, Key=file_key)
+            if get_etag(response) == etag:
+                logger.info('skipped {}[{}]'.format(file_key, etag))
+                return
+        except CosServiceError:
+            pass
 
     with open(full_path, 'rb') as fp:
         response = client.put_object(Bucket=bucket_url, Key=file_key, Body=fp)
