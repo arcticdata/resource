@@ -2,7 +2,9 @@
 import json
 import logging
 import os
+import shutil
 
+import requests
 from qcloud_cos import CosConfig, CosS3Client, CosServiceError
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -35,7 +37,7 @@ def upload(full_path):
     file_key = full_path[len_resource_path:]
     if not file_key:
         return
-    logger.info('processing {}'.format(file_key))
+
     global resource_file_map
 
     # ignore same file
@@ -77,9 +79,28 @@ def main():
     listdir_iter(resource_base_path)
 
     with open(resource_lock_file, 'w') as fp:
-        fp.write(json.dumps(resource_file_map, ensure_ascii=False, sort_keys=True))
+        fp.write(json.dumps(resource_file_map, ensure_ascii=False, sort_keys=True, indent=4))
     logger.info('successfully updated resource lock file.')
 
 
+def download_react(react_version: str):
+    react_version = react_version.strip()
+    base_url = 'https://unpkg.com/{m}@{v}/umd/{m}.production.min.js'
+    version_path = os.path.join(resource_base_path, 'react', 'v{}'.format(react_version))
+    os.makedirs(version_path, exist_ok=True)
+    for module in ['react', 'react-dom']:
+        url = base_url.format(m=module, v=react_version)
+        r = requests.get(url, stream=True)
+        filename = '{}.production.min.js'.format(module)
+        if r.status_code == 200:
+            with open(os.path.join(version_path, filename), 'wb') as f:
+                r.raw.decode_content = True
+                shutil.copyfileobj(r.raw, f)
+                logger.info('Saving {} success'.format(filename))
+        else:
+            logger.error('Downloading {} error'.format(filename))
+
+
 if __name__ == '__main__':
+    # download_react('16.7.0')
     main()
