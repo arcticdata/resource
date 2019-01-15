@@ -2,7 +2,9 @@
 import json
 import logging
 import os
+import shutil
 
+import requests
 from qcloud_cos import CosConfig, CosS3Client, CosServiceError
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -81,5 +83,22 @@ def main():
     logger.info('successfully updated resource lock file.')
 
 
+def download_react(react_version: str):
+    react_version = react_version.strip()
+    url = 'https://unpkg.com/react@{}/umd/{}'
+    version_path = os.path.join(resource_base_path, 'react', 'v{}'.format(react_version))
+    os.makedirs(version_path, exist_ok=True)
+    for filename in ['react.production.min.js', 'react-dom.production.min.js']:
+        r = requests.get(url.format(react_version, filename), stream=True)
+        if r.status_code == 200:
+            with open(os.path.join(version_path, filename), 'wb') as f:
+                r.raw.decode_content = True
+                shutil.copyfileobj(r.raw, f)
+                logger.info('Saving {} success'.format(filename))
+        else:
+            logger.error('Downloading {} error'.format(filename))
+
+
 if __name__ == '__main__':
+    download_react('16.7.0')
     main()
