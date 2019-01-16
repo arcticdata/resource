@@ -5,8 +5,8 @@ import os
 import shutil
 
 import boto3
-import qcloud_cos
 import requests
+from botocore.exceptions import ClientError
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -21,18 +21,22 @@ resource_base_path = os.path.join(base_path, bucket)
 len_resource_path = len(resource_base_path) + 1
 
 bucket_name = '{}-{}'.format(bucket, os.getenv('QCLOUD_APP_ID'))
-tencentcloud_client = qcloud_cos.CosS3Client(qcloud_cos.CosConfig(
-    Region='ap-shanghai',
-    SecretId=os.getenv('QCLOUD_SECRET_ID'),
-    SecretKey=os.getenv('QCLOUD_SECRET_KEY')
-))
-
+tencentcloud_client = boto3.client(
+    's3',
+    endpoint_url='https://{}.cos.ap-shanghai.myqcloud.com'.format(bucket_name),
+    aws_access_key_id=os.getenv('QCLOUD_SECRET_ID'),
+    aws_secret_access_key=os.getenv('QCLOUD_SECRET_KEY'),
+)
 qingcloud_client = boto3.client(
     's3',
-    endpoint_url='https://s3.sh1a.qingstor.com',
+    endpoint_url='https://s3.pek3b.qingstor.com',
     aws_access_key_id=os.getenv('qingcloud_access_key_id'),
     aws_secret_access_key=os.getenv('qingcloud_secret_access_key'),
 )
+s3_clients = {
+    'QingCloud': qingcloud_client,
+    'TencentCloud': tencentcloud_client,
+}
 
 
 def get_etag(response):
@@ -46,34 +50,27 @@ def upload(full_path):
     if not file_key:
         return
 
-    global resource_file_map, resource_file_set
+    global s3_clients, resource_file_map, resource_file_set
 
     resource_file_set.add(file_key)
 
-    # ignore same file
-    if file_key in resource_file_map:
-        etag = resource_file_map[file_key]
-        try:
-            response = tencentcloud_client.head_object(Bucket=bucket_name, Key=file_key)
-            if get_etag(response) == etag:
-                logger.info('skipped {}[{}]'.format(file_key, etag))
-                return
-        except qcloud_cos.CosServiceError:
-            pass
+    for vendor, client in s3_clients.items():
+        if file_key in resource_file_map:
+            etag = resource_file_map[file_key]
+            try:
+                response = client.head_object(Bucket=bucket_name, Key=file_key)
+                if get_etag(response) == etag:
+                    logger.info('skipped {}[{}] in {}'.format(file_key, etag, vendor))
+                    continue
+            except ClientError:
+                pass
 
-    # upload to TencentCloud
-    with open(full_path, 'rb') as fp:
-        response = tencentcloud_client.put_object(Bucket=bucket_name, Key=file_key, Body=fp)
-    etag = get_etag(response)
-    resource_file_map[file_key] = etag
-    logger.info('uploaded {}[{}] to TencentCloud'.format(file_key, etag))
-
-    # upload to QingCloud
-    with open(full_path, 'rb') as fp:
-        response = qingcloud_client.put_object(Bucket=bucket_name, Key=file_key, Body=fp)
-    print(response)
-    exit()
-    return
+        # upload to TencentCloud
+        with open(full_path, 'rb') as fp:
+            response = client.put_object(Bucket=bucket_name, Key=file_key, Body=fp)
+        etag = get_etag(response)
+        resource_file_map[file_key] = etag
+        logger.info('uploaded {}[{}] to {}'.format(file_key, etag, vendor))
 
 
 def listdir_iter(path):
