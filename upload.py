@@ -23,7 +23,7 @@ len_resource_path = len(resource_base_path) + 1
 bucket_name = '{}-{}'.format(bucket, os.getenv('QCLOUD_APP_ID'))
 tencentcloud_client = boto3.client(
     's3',
-    endpoint_url='https://{}.cos.ap-shanghai.myqcloud.com'.format(bucket_name),
+    endpoint_url='https://cos.ap-shanghai.myqcloud.com',
     aws_access_key_id=os.getenv('QCLOUD_SECRET_ID'),
     aws_secret_access_key=os.getenv('QCLOUD_SECRET_KEY'),
 )
