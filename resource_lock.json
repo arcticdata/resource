@@ -19,6 +19,11 @@
   "logo/211x50/blue.png": "6b7308c0c09c7e694c8bab5c7600a909",
   "logo/256x256/blue.png": "b0f9d6dbd74e0ecd1e22314f8286a039",
   "logo/256x256/white.png": "ad8c9901996bcdd3628ffdda754bd203",
+  "pages/404.html": "df004b9238a209991caf295c9e68e69c",
+  "pages/500.html": "60ae10bd3c44877d7c6600da50974c00",
+  "pages/503.html": "42c5d35da428ccc487e7bee612b5c316",
+  "pages/README.md": "896830ff1cdffb0f98eeb7f6d94a82e4",
+  "partner/peony.png": "5806b5a7de21faa35bbcb96eb5e32297",
   "react/v16.7.0/react-dom.production.min.js": "f51825080bdea33df6874f3ac1a87bcc",
   "react/v16.7.0/react.production.min.js": "6797a59ed573f8a4c1c74db6e354f2eb"
 }
