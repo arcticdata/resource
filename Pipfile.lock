@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f6285daa79ddae7753cbc7d14c7e64cb2e1894b891c9c0b677674cf8fe72b366"
+            "sha256": "bcf0c5732384382c51c885107a2f7cfc586966a2a8921651c917dc277a744aba"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -44,21 +44,6 @@
                 "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"
             ],
             "version": "==3.0.4"
-        },
-        "cos-python-sdk-v5": {
-            "hashes": [
-                "sha256:33c46412a828475cc116e64f897a7fb61e84450a43384f50d56d779aee074f20",
-                "sha256:64d63411009554535f642db06bf54012508f4431d66a3d83f186617c26feb0f1",
-                "sha256:c05b09225185db39d26335c281299dea2a72e9cebc5b64fa6a834f63aa2cb969"
-            ],
-            "index": "pypi",
-            "version": "==1.6.5"
-        },
-        "dicttoxml": {
-            "hashes": [
-                "sha256:ea44cc4ec6c0f85098c57a431a1ee891b3549347b07b7414c8a24611ecf37e45"
-            ],
-            "version": "==1.7.4"
         },
         "docutils": {
             "hashes": [
