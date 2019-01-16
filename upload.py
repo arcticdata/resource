@@ -4,8 +4,9 @@ import logging
 import os
 import shutil
 
+import boto3
+import qcloud_cos
 import requests
-from qcloud_cos import CosConfig, CosS3Client, CosServiceError
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,14 +20,19 @@ resource_file_set = set()
 resource_base_path = os.path.join(base_path, bucket)
 len_resource_path = len(resource_base_path) + 1
 
-app_id = os.getenv('QCLOUD_APP_ID')
-secret_id = os.getenv('QCLOUD_SECRET_ID')
-secret_key = os.getenv('QCLOUD_SECRET_KEY')
-bucket_url = '{}-{}'.format(bucket, app_id)
+bucket_name = '{}-{}'.format(bucket, os.getenv('QCLOUD_APP_ID'))
+tencentcloud_client = qcloud_cos.CosS3Client(qcloud_cos.CosConfig(
+    Region='ap-shanghai',
+    SecretId=os.getenv('QCLOUD_SECRET_ID'),
+    SecretKey=os.getenv('QCLOUD_SECRET_KEY')
+))
 
-region = 'ap-shanghai'
-config = CosConfig(Region=region, SecretId=secret_id, SecretKey=secret_key)  # 获取配置对象
-client = CosS3Client(config)
+qingcloud_client = boto3.client(
+    's3',
+    endpoint_url='https://s3.sh1a.qingstor.com',
+    aws_access_key_id=os.getenv('qingcloud_access_key_id'),
+    aws_secret_access_key=os.getenv('qingcloud_secret_access_key'),
+)
 
 
 def get_etag(response):
@@ -48,18 +54,26 @@ def upload(full_path):
     if file_key in resource_file_map:
         etag = resource_file_map[file_key]
         try:
-            response = client.head_object(Bucket=bucket_url, Key=file_key)
+            response = tencentcloud_client.head_object(Bucket=bucket_name, Key=file_key)
             if get_etag(response) == etag:
                 logger.info('skipped {}[{}]'.format(file_key, etag))
                 return
-        except CosServiceError:
+        except qcloud_cos.CosServiceError:
             pass
 
+    # upload to TencentCloud
     with open(full_path, 'rb') as fp:
-        response = client.put_object(Bucket=bucket_url, Key=file_key, Body=fp)
+        response = tencentcloud_client.put_object(Bucket=bucket_name, Key=file_key, Body=fp)
     etag = get_etag(response)
     resource_file_map[file_key] = etag
-    logger.info('uploaded {}[{}]'.format(file_key, etag))
+    logger.info('uploaded {}[{}] to TencentCloud'.format(file_key, etag))
+
+    # upload to QingCloud
+    with open(full_path, 'rb') as fp:
+        response = qingcloud_client.put_object(Bucket=bucket_name, Key=file_key, Body=fp)
+    print(response)
+    exit()
+    return
 
 
 def listdir_iter(path):
