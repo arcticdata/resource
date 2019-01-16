@@ -87,7 +87,7 @@ def main():
             resource_file_map.pop(k, None)
 
     with open(resource_lock_file, 'w') as fp:
-        fp.write(json.dumps(resource_file_map, ensure_ascii=False, sort_keys=True, indent=4))
+        fp.write(json.dumps(resource_file_map, ensure_ascii=False, sort_keys=True, indent=2))
     logger.info('successfully updated resource lock file.')
 
 
