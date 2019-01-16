@@ -4,8 +4,9 @@ import logging
 import os
 import shutil
 
+import boto3
 import requests
-from qcloud_cos import CosConfig, CosS3Client, CosServiceError
+from botocore.exceptions import ClientError
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,14 +20,23 @@ resource_file_set = set()
 resource_base_path = os.path.join(base_path, bucket)
 len_resource_path = len(resource_base_path) + 1
 
-app_id = os.getenv('QCLOUD_APP_ID')
-secret_id = os.getenv('QCLOUD_SECRET_ID')
-secret_key = os.getenv('QCLOUD_SECRET_KEY')
-bucket_url = '{}-{}'.format(bucket, app_id)
-
-region = 'ap-shanghai'
-config = CosConfig(Region=region, SecretId=secret_id, SecretKey=secret_key)  # 获取配置对象
-client = CosS3Client(config)
+bucket_name = '{}-{}'.format(bucket, os.getenv('QCLOUD_APP_ID'))
+tencentcloud_client = boto3.client(
+    's3',
+    endpoint_url='https://{}.cos.ap-shanghai.myqcloud.com'.format(bucket_name),
+    aws_access_key_id=os.getenv('QCLOUD_SECRET_ID'),
+    aws_secret_access_key=os.getenv('QCLOUD_SECRET_KEY'),
+)
+qingcloud_client = boto3.client(
+    's3',
+    endpoint_url='https://s3.pek3b.qingstor.com',
+    aws_access_key_id=os.getenv('qingcloud_access_key_id'),
+    aws_secret_access_key=os.getenv('qingcloud_secret_access_key'),
+)
+s3_clients = {
+    'QingCloud': qingcloud_client,
+    'TencentCloud': tencentcloud_client,
+}
 
 
 def get_etag(response):
@@ -40,26 +50,27 @@ def upload(full_path):
     if not file_key:
         return
 
-    global resource_file_map, resource_file_set
+    global s3_clients, resource_file_map, resource_file_set
 
     resource_file_set.add(file_key)
 
-    # ignore same file
-    if file_key in resource_file_map:
-        etag = resource_file_map[file_key]
-        try:
-            response = client.head_object(Bucket=bucket_url, Key=file_key)
-            if get_etag(response) == etag:
-                logger.info('skipped {}[{}]'.format(file_key, etag))
-                return
-        except CosServiceError:
-            pass
+    for vendor, client in s3_clients.items():
+        if file_key in resource_file_map:
+            etag = resource_file_map[file_key]
+            try:
+                response = client.head_object(Bucket=bucket_name, Key=file_key)
+                if get_etag(response) == etag:
+                    logger.info('skipped {}[{}] in {}'.format(file_key, etag, vendor))
+                    continue
+            except ClientError:
+                pass
 
-    with open(full_path, 'rb') as fp:
-        response = client.put_object(Bucket=bucket_url, Key=file_key, Body=fp)
-    etag = get_etag(response)
-    resource_file_map[file_key] = etag
-    logger.info('uploaded {}[{}]'.format(file_key, etag))
+        # upload to TencentCloud
+        with open(full_path, 'rb') as fp:
+            response = client.put_object(Bucket=bucket_name, Key=file_key, Body=fp)
+        etag = get_etag(response)
+        resource_file_map[file_key] = etag
+        logger.info('uploaded {}[{}] to {}'.format(file_key, etag, vendor))
 
 
 def listdir_iter(path):

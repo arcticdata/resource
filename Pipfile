@@ -6,8 +6,8 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-cos-python-sdk-v5 = "*"
 requests = "*"
+boto3 = "*"
 
 [requires]
 python_version = "3.6"
