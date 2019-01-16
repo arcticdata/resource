@@ -14,6 +14,8 @@ bucket = 'resource'
 base_path = os.path.dirname(os.path.abspath(__file__))
 resource_lock_file = os.path.join(base_path, 'resource_lock.json')
 resource_file_map = {}
+resource_file_set = set()
+
 resource_base_path = os.path.join(base_path, bucket)
 len_resource_path = len(resource_base_path) + 1
 
@@ -38,7 +40,9 @@ def upload(full_path):
     if not file_key:
         return
 
-    global resource_file_map
+    global resource_file_map, resource_file_set
+
+    resource_file_set.add(file_key)
 
     # ignore same file
     if file_key in resource_file_map:
@@ -70,13 +74,17 @@ def listdir_iter(path):
 def main():
     logger.info('working at {}'.format(base_path))
     logger.info('loading resource lock file.')
-    global resource_file_map
+    global resource_file_map, resource_file_set
 
     if os.path.exists(resource_lock_file):
         with open(resource_lock_file) as json_file:
             resource_file_map = json.load(json_file)
 
     listdir_iter(resource_base_path)
+
+    for k in resource_file_map.keys():
+        if k not in resource_file_set:
+            resource_file_map.pop(k, None)
 
     with open(resource_lock_file, 'w') as fp:
         fp.write(json.dumps(resource_file_map, ensure_ascii=False, sort_keys=True, indent=4))
