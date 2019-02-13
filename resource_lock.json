@@ -25,5 +25,7 @@
   "pages/README.md": "8c006113adb73e806178102a23a49f7e",
   "partner/peony.png": "5806b5a7de21faa35bbcb96eb5e32297",
   "react/v16.7.0/react-dom.production.min.js": "f51825080bdea33df6874f3ac1a87bcc",
-  "react/v16.7.0/react.production.min.js": "6797a59ed573f8a4c1c74db6e354f2eb"
+  "react/v16.7.0/react.production.min.js": "6797a59ed573f8a4c1c74db6e354f2eb",
+  "react/v16.8.1/react-dom.production.min.js": "6764e3f5bede5e303f7579e6f672ba7e",
+  "react/v16.8.1/react.production.min.js": "648b52e105850db91ae2bebe20548455"
 }

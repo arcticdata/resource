@@ -121,5 +121,5 @@ def download_react(react_version: str):
 
 
 if __name__ == '__main__':
-    # download_react('16.7.0')
+    # download_react('16.8.1')
     main()
