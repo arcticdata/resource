@@ -29,5 +29,7 @@
   "react/v16.8.1/react-dom.production.min.js": "6764e3f5bede5e303f7579e6f672ba7e",
   "react/v16.8.1/react.production.min.js": "648b52e105850db91ae2bebe20548455",
   "react/v16.8.2/react-dom.production.min.js": "148e0b362f8dfce75b71d43b9662a6cd",
-  "react/v16.8.2/react.production.min.js": "d89ca949bd7d0511e0450f67ceff9699"
+  "react/v16.8.2/react.production.min.js": "d89ca949bd7d0511e0450f67ceff9699",
+  "react/v16.8.3/react-dom.production.min.js": "84ec5322ba3b6dff3fca9a71832e3f1d",
+  "react/v16.8.3/react.production.min.js": "698114f22db5a3585658c1c2489be390"
 }
