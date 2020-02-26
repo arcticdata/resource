@@ -27,14 +27,7 @@ tencentcloud_client = boto3.client(
     aws_access_key_id=os.getenv('QCLOUD_SECRET_ID'),
     aws_secret_access_key=os.getenv('QCLOUD_SECRET_KEY'),
 )
-qingcloud_client = boto3.client(
-    's3',
-    endpoint_url='https://s3.pek3b.qingstor.com',
-    aws_access_key_id=os.getenv('qingcloud_access_key_id'),
-    aws_secret_access_key=os.getenv('qingcloud_secret_access_key'),
-)
 s3_clients = {
-    'QingCloud': qingcloud_client,
     'TencentCloud': tencentcloud_client,
 }
 
