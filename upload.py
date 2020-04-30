@@ -113,6 +113,25 @@ def download_react(react_version: str):
             logger.error('Downloading {} error'.format(filename))
 
 
+def download_slatejs(slate_version: str):
+    slate_version = slate_version.strip()
+    base_url = 'https://unpkg.com/{m}/dist/{m}.min.js'
+    version_path = os.path.join(resource_base_path, 'slatejs', 'v{}'.format(slate_version))
+    os.makedirs(version_path, exist_ok=True)
+    for module in ['slate', 'slate-react']:
+        url = base_url.format(m=module)
+        r = requests.get(url, stream=True)
+        filename = '{}.min.js'.format(module)
+        if r.status_code == 200:
+            with open(os.path.join(version_path, filename), 'wb') as f:
+                r.raw.decode_content = True
+                shutil.copyfileobj(r.raw, f)
+                logger.info('Saving {} success'.format(filename))
+        else:
+            logger.error('Downloading {} error'.format(filename))
+
+
 if __name__ == '__main__':
     # download_react("16.13.1")
+    # download_slatejs("0.57.2")
     main()
