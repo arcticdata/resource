@@ -132,6 +132,6 @@ def download_slatejs(slate_version: str):
 
 
 if __name__ == '__main__':
-    # download_react("16.13.1")
+    download_react("16.14.0")
     # download_slatejs("0.57.2")
     main()
