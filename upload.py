@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import json
 import logging
 import os
@@ -104,7 +103,7 @@ def download_react(react_version: str):
         url = base_url.format(m=module, v=react_version)
         r = requests.get(url, stream=True)
         filename = '{}.production.min.js'.format(module)
-        if r.status_code == 200:
+        if r.status_code == requests.codes.ok:
             with open(os.path.join(version_path, filename), 'wb') as f:
                 r.raw.decode_content = True
                 shutil.copyfileobj(r.raw, f)
@@ -122,7 +121,7 @@ def download_slatejs(slate_version: str):
         url = base_url.format(m=module)
         r = requests.get(url, stream=True)
         filename = '{}.min.js'.format(module)
-        if r.status_code == 200:
+        if r.status_code == requests.codes.ok:
             with open(os.path.join(version_path, filename), 'wb') as f:
                 r.raw.decode_content = True
                 shutil.copyfileobj(r.raw, f)
@@ -132,6 +131,6 @@ def download_slatejs(slate_version: str):
 
 
 if __name__ == '__main__':
-    download_react("16.14.0")
+    # download_react("16.14.0")
     # download_slatejs("0.57.2")
     main()
