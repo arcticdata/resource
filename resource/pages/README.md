@@ -1,5 +1,5 @@
 # pages
-Pages for [datarc.cn](https://datarc.cn).
+Error pages for [datarc.cn](https://datarc.cn).
 
 #### Examples
 * [404](https://r.datarc.cn/pages/404.html)
