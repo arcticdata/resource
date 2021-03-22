@@ -1,3 +1,4 @@
+import hashlib
 import json
 import logging
 import os
@@ -6,7 +7,7 @@ import boto3
 import httpx
 from botocore.exceptions import ClientError
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logging.basicConfig(format='[%(levelname)s] %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 bucket = 'resource'
@@ -19,14 +20,13 @@ resource_base_path = os.path.join(base_path, bucket)
 len_resource_path = len(resource_base_path) + 1
 
 bucket_name = f'{bucket}-{os.getenv("QCLOUD_APP_ID")}'
-tencentcloud_client = boto3.client(
-    's3',
-    endpoint_url='https://cos.ap-shanghai.myqcloud.com',
-    aws_access_key_id=os.getenv('QCLOUD_SECRET_ID'),
-    aws_secret_access_key=os.getenv('QCLOUD_SECRET_KEY'),
-)
 s3_clients = {
-    'TencentCloud': tencentcloud_client,
+    'TencentCloud': boto3.client(
+        's3',
+        endpoint_url='https://cos.ap-shanghai.myqcloud.com',
+        aws_access_key_id=os.getenv('QCLOUD_SECRET_ID'),
+        aws_secret_access_key=os.getenv('QCLOUD_SECRET_KEY'),
+    ),
 }
 
 
@@ -34,6 +34,14 @@ def get_etag(response):
     if 'ETag' not in response:
         return None
     return response['ETag'][1:-1]  # remove quote
+
+
+def get_md5(file_path: str) -> str:
+    hash_md5 = hashlib.md5()
+    with open(file_path, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
 
 
 def upload(full_path):
@@ -44,9 +52,9 @@ def upload(full_path):
     global s3_clients, resource_file_map, resource_file_set
 
     resource_file_set.add(file_key)
-
+    file_md5 = get_md5(full_path)
     for vendor, client in s3_clients.items():
-        if file_key in resource_file_map:
+        if file_md5 == resource_file_map.get(file_key):
             etag = resource_file_map[file_key]
             try:
                 response = client.head_object(Bucket=bucket_name, Key=file_key)
