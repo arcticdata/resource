@@ -6,8 +6,8 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-requests = "*"
 boto3 = "*"
+httpx = {extras = ["http2"], version = "*"}
 
 [requires]
 python_version = "3.8"

@@ -80,6 +80,8 @@
   "react/v16.8.2/react.production.min.js": "d89ca949bd7d0511e0450f67ceff9699",
   "react/v16.8.3/react-dom.production.min.js": "84ec5322ba3b6dff3fca9a71832e3f1d",
   "react/v16.8.3/react.production.min.js": "698114f22db5a3585658c1c2489be390",
+  "react/v17.0.1/react-dom.production.min.js": "d41d8cd98f00b204e9800998ecf8427e",
+  "react/v17.0.1/react.production.min.js": "d41d8cd98f00b204e9800998ecf8427e",
   "slatejs/v0.57.2/slate-react.min.js": "67e93cd03781481ea385b3546319ddaf",
   "slatejs/v0.57.2/slate.min.js": "0b2036b54f0dcbbbf8addb7015cbba15"
 }

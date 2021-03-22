@@ -1,10 +1,9 @@
 import json
 import logging
 import os
-import shutil
 
 import boto3
-import requests
+import httpx
 from botocore.exceptions import ClientError
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -19,7 +18,7 @@ resource_file_set = set()
 resource_base_path = os.path.join(base_path, bucket)
 len_resource_path = len(resource_base_path) + 1
 
-bucket_name = '{}-{}'.format(bucket, os.getenv('QCLOUD_APP_ID'))
+bucket_name = f'{bucket}-{os.getenv("QCLOUD_APP_ID")}'
 tencentcloud_client = boto3.client(
     's3',
     endpoint_url='https://cos.ap-shanghai.myqcloud.com',
@@ -52,7 +51,7 @@ def upload(full_path):
             try:
                 response = client.head_object(Bucket=bucket_name, Key=file_key)
                 if get_etag(response) == etag:
-                    logger.info('skipped {}[{}] in {}'.format(file_key, etag, vendor))
+                    logger.info(f'skipped {file_key}[{etag}] in {vendor}')
                     continue
             except ClientError:
                 pass
@@ -62,7 +61,7 @@ def upload(full_path):
             response = client.put_object(Bucket=bucket_name, Key=file_key, Body=fp)
         etag = get_etag(response)
         resource_file_map[file_key] = etag
-        logger.info('uploaded {}[{}] to {}'.format(file_key, etag, vendor))
+        logger.info(f'uploaded {file_key}[{etag}] in {vendor}')
 
 
 def listdir_iter(path):
@@ -75,7 +74,7 @@ def listdir_iter(path):
 
 
 def main():
-    logger.info('working at {}'.format(base_path))
+    logger.info(f'working at {base_path}')
     logger.info('loading resource lock file.')
     global resource_file_map, resource_file_set
 
@@ -97,40 +96,21 @@ def main():
 def download_react(react_version: str):
     react_version = react_version.strip()
     base_url = 'https://unpkg.com/{m}@{v}/umd/{m}.production.min.js'
-    version_path = os.path.join(resource_base_path, 'react', 'v{}'.format(react_version))
+    version_path = os.path.join(resource_base_path, 'react', f'v{react_version}')
     os.makedirs(version_path, exist_ok=True)
     for module in ['react', 'react-dom']:
+        filename = f'{module}.production.min.js'
         url = base_url.format(m=module, v=react_version)
-        r = requests.get(url, stream=True)
-        filename = '{}.production.min.js'.format(module)
-        if r.status_code == requests.codes.ok:
-            with open(os.path.join(version_path, filename), 'wb') as f:
-                r.raw.decode_content = True
-                shutil.copyfileobj(r.raw, f)
-                logger.info('Saving {} success'.format(filename))
-        else:
-            logger.error('Downloading {} error'.format(filename))
-
-
-def download_slatejs(slate_version: str):
-    slate_version = slate_version.strip()
-    base_url = 'https://unpkg.com/{m}/dist/{m}.min.js'
-    version_path = os.path.join(resource_base_path, 'slatejs', 'v{}'.format(slate_version))
-    os.makedirs(version_path, exist_ok=True)
-    for module in ['slate', 'slate-react']:
-        url = base_url.format(m=module)
-        r = requests.get(url, stream=True)
-        filename = '{}.min.js'.format(module)
-        if r.status_code == requests.codes.ok:
-            with open(os.path.join(version_path, filename), 'wb') as f:
-                r.raw.decode_content = True
-                shutil.copyfileobj(r.raw, f)
-                logger.info('Saving {} success'.format(filename))
-        else:
-            logger.error('Downloading {} error'.format(filename))
+        try:
+            with httpx.Client(http2=True).stream("GET", url) as r:
+                with open(os.path.join(version_path, filename), 'wb') as f:
+                    for data in r.iter_bytes():
+                        f.write(data)
+                    logger.info(f'Saving {filename} success')
+        except Exception as e:
+            logger.error(f'Downloading {filename} error', e)
 
 
 if __name__ == '__main__':
-    # download_react("16.14.0")
-    # download_slatejs("0.57.2")
+    # download_react("17.0.1")
     main()
