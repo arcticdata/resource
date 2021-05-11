@@ -110,7 +110,24 @@ def download_react(react_version: str):
         filename = f'{module}.production.min.js'
         url = base_url.format(m=module, v=react_version)
         try:
-            with httpx.Client(http2=True).stream("GET", url) as r:
+            with httpx.Client(http2=True, trust_env=False).stream("GET", url) as r:
+                with open(os.path.join(version_path, filename), 'wb') as f:
+                    for data in r.iter_bytes():
+                        f.write(data)
+                    logger.info(f'Saving {filename} success')
+        except Exception as e:
+            logger.error(f'Downloading {filename} error', e)
+
+
+def download_echarts(version: str):
+    version = version.strip()
+    base_url = f"https://cdn.jsdelivr.net/npm/echarts@{version}/dist/"
+    version_path = os.path.join(resource_base_path, 'echarts', version)
+    os.makedirs(version_path, exist_ok=True)
+    for filename in ['echarts.min.js']:
+        url = f"{base_url}{filename}"
+        try:
+            with httpx.Client(http2=True, trust_env=False).stream("GET", url) as r:
                 with open(os.path.join(version_path, filename), 'wb') as f:
                     for data in r.iter_bytes():
                         f.write(data)
@@ -121,4 +138,5 @@ def download_react(react_version: str):
 
 if __name__ == '__main__':
     # download_react("17.0.1")
+    # download_echarts("5.1.1")
     main()
