@@ -1,4 +1,10 @@
+#--------------------------------------------
+# 完全模式编排文件，下载方式：
+#
+# wget https://r.datarc.cn/deploy/complex/docker-compose.yml
+#--------------------------------------------
 version: '3.5'
+
 services:
   query_redis:
     image: redis:6-alpine
