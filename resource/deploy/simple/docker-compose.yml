@@ -1,0 +1,53 @@
+#--------------------------------------------
+# 简单模式编排文件，下载方式：
+#
+# wget https://r.datarc.cn/deploy/simple/docker-compose.yml
+#--------------------------------------------
+version: '3.5'
+
+services:
+  query_redis:
+    image: redis:6-alpine
+    restart: always
+    command: [ "redis-server", "--save", '""', "--appendonly", "no" ]
+  query_postgres:
+    image: postgres:13-alpine
+    restart: always
+    env_file: .env
+    volumes:
+      - ./query_data:/var/lib/postgresql/data
+  query_web:
+    image: "${QUERY_IMAGE}"
+    restart: always
+    depends_on:
+      - query_redis
+      - query_postgres
+    env_file: .env
+    volumes:
+      - ./query.py:/home/code/luming/configs.py
+      - /tmp:/tmp
+    ports:
+      - 8002:8000
+    command: "gunicorn luming.wsgi -c gunicorn.conf.py"
+  query_beat:
+    image: "${QUERY_IMAGE}"
+    restart: always
+    depends_on:
+      - query_redis
+      - query_postgres
+    env_file: .env
+    volumes:
+      - ./query.py:/home/code/luming/configs.py
+      - /tmp:/tmp
+    command: "celery --app=luming beat --loglevel=INFO"
+  query_worker:
+    image: "${QUERY_IMAGE}"
+    restart: always
+    depends_on:
+      - query_redis
+      - query_postgres
+    env_file: .env
+    volumes:
+      - ./query.py:/home/code/luming/configs.py
+      - /tmp:/tmp
+    command: "celery --app=luming worker --loglevel=INFO --concurrency=2 --events"

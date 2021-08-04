@@ -10,4 +10,4 @@ boto3 = "*"
 httpx = {extras = ["http2"], version = "*"}
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"
