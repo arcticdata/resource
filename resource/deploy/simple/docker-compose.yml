@@ -25,6 +25,7 @@ services:
     env_file: .env
     volumes:
       - ./query.py:/home/code/luming/configs.py
+      - ./data:/home/code/data
       - /tmp:/tmp
     ports:
       - 8002:8000
@@ -49,5 +50,6 @@ services:
     env_file: .env
     volumes:
       - ./query.py:/home/code/luming/configs.py
+      - ./data:/home/code/data
       - /tmp:/tmp
     command: "celery --app=luming worker --loglevel=INFO --concurrency=2 --events"
