@@ -1,3 +1,4 @@
+import copy
 import hashlib
 import json
 import logging
@@ -92,7 +93,8 @@ def main():
 
     listdir_iter(resource_base_path)
 
-    for k in resource_file_map.keys():
+    mapping = copy.copy(resource_file_map)
+    for k in mapping.keys():
         if k not in resource_file_set:
             resource_file_map.pop(k, None)
 
