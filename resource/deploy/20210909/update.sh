@@ -2,7 +2,7 @@
 #--------------------------------------------
 # 更新北极数据相关服务
 #
-# wget -O update.sh https://r.datarc.cn/deploy/update.sh && sh update.sh
+# wget -O update.sh https://r.datarc.cn/deploy/20210909/update.sh && sh update.sh
 #
 #--------------------------------------------
 
@@ -19,21 +19,12 @@ restart_services() {
   docker-compose up -d --remove-orphans --force-recreate
 }
 
-migrate_query_service() {
+migrate_database() {
   if [ "$(docker ps -q -f name=${current_dir}_query_web_1)" ]; then
-    echo "迁移查询服务数据库..."
-    docker exec -it "${current_dir}_query_web_1" pipenv run python manage.py migrate
+    echo "迁移服务数据库..."
+    docker exec -it "${current_dir}_web_1" pipenv run python manage.py migrate
   else
-    echo "未检测到查询服务"
-  fi
-}
-
-migrate_core_service() {
-  if [ "$(docker ps -q -f name=${current_dir}_core_web_1)" ]; then
-    echo "迁移核心服务数据库..."
-    docker exec -it "${current_dir}_core_web_1" pipenv run python manage.py migrate
-  else
-    echo "未检测到核心服务"
+    echo "未检测到服务进程"
   fi
 }
 
@@ -45,8 +36,7 @@ clean_images() {
 if [ -e $compose_file ]; then
   pull_images
   restart_services
-  migrate_query_service
-  migrate_core_service
+  migrate_database
   clean_images
   echo "更新完成"
 else
