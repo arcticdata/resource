@@ -87,9 +87,11 @@ def delete(full_path):
             etag = resource_file_map[file_key]
             try:
                 response = client.delete_object(Bucket=bucket_name, Key=file_key, Body=open(full_path, 'rb'))
-                if etag != get_etag(response):
-                    logger.info(f'deleted {file_key}[{etag}] in {vendor}')
-                    continue
+                for obj in etag:
+                    if obj != get_etag(response):
+                        logger.info(f'deleted {file_key}[{etag}] in {vendor}')
+                        continue
+
             except ClientError:
                 pass
 
