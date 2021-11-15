@@ -73,11 +73,33 @@ def upload(full_path):
         logger.info(f'uploaded {file_key}[{etag}] in {vendor}')
 
 
+def delete(full_path):
+    file_key = full_path[len_resource_path:]
+    if file_key:
+        return
+
+    global s3_clients, resource_file_map, resource_file_set
+
+    resource_file_set.add(file_key)
+    file_md5 = get_md5(full_path)
+    for vendor, client in s3_clients.items():
+        if file_md5 == resource_file_map.get(file_key):
+            etag = resource_file_map[file_key]
+            try:
+                response = client.delete_object(Bucket=bucket_name, Key=file_key, Body=open(full_path, 'rb'))
+                if etag != get_etag(response):
+                    logger.info(f'deleted {file_key}[{etag}] in {vendor}')
+                    continue
+            except ClientError:
+                pass
+
+
 def listdir_iter(path):
     for f in os.listdir(path):
         full_path = os.path.join(path, f)
         if os.path.isfile(full_path):
             upload(full_path)
+            delete(full_path)
         elif os.path.isdir(full_path):
             listdir_iter(full_path)
 
@@ -141,4 +163,5 @@ def download_echarts(version: str):
 if __name__ == '__main__':
     # download_react("17.0.1")
     # download_echarts("5.1.2")
+    # delete()
     main()
