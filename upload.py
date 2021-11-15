@@ -83,14 +83,13 @@ def delete(full_path):
     resource_file_set.add(file_key)
     file_md5 = get_md5(full_path)
     for vendor, client in s3_clients.items():
-        if file_md5 == resource_file_map.get(file_key):
+        if file_md5 != resource_file_map.get(file_key):
             etag = resource_file_map[file_key]
             try:
                 response = client.delete_object(Bucket=bucket_name, Key=file_key, Body=open(full_path, 'rb'))
-                for obj in etag:
-                    if obj != get_etag(response):
-                        logger.info(f'deleted {file_key}[{etag}] in {vendor}')
-                        continue
+                if etag != get_etag(response):
+                    logger.info(f'deleted {file_key}[{etag}] in {vendor}')
+                    continue
 
             except ClientError:
                 pass
