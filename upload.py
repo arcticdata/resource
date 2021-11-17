@@ -86,7 +86,7 @@ def delete():
     for vendor, client in s3_clients.items():
         resp = client.list_objects_v2(Bucket=bucket_name)
         for content in resp.get('Contents', []):
-            if (key := content.get('Key')) in resource_file_map:
+            if (key := content.get('Key')) not in resource_file_map:
                 try:
                     response = client.delete_object(Bucket=bucket_name, Key=key)
                     if response.get('DeleteMarker'):
