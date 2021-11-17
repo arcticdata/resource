@@ -83,22 +83,18 @@ def listdir_iter(path):
 
 
 def delete():
-    global s3_clients, resource_file_map
-
     for vendor, client in s3_clients.items():
         resp = client.list_objects_v2(Bucket=bucket_name)
         for content in resp.get('Contents', []):
-            key = content.get('Key')
-
-            if key and key not in resource_file_map.keys():
+            if (key := content.get('Key')) in resource_file_map:
                 try:
                     response = client.delete_object(Bucket=bucket_name, Key=key)
                     if response.get('DeleteMarker'):
                         logger.info(f'deleted {key} in {vendor} success')
                     else:
-                        logger.info(f'deleted {key} in {vendor} success')
-                except ClientError:
-                    pass
+                        logger.info(f'deleted {key} in {vendor} failed')
+                except ClientError as e:
+                    logger.exception(e)
 
 
 def main():
