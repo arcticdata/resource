@@ -60,7 +60,7 @@ def upload(full_path):
             try:
                 response = client.head_object(Bucket=bucket_name, Key=file_key)
                 if get_etag(response) == etag:
-                    logger.info(f'skipped {file_key}[{etag}] in {vendor}')
+                    logger.info(f'Skipped {file_key}[{etag}] in {vendor}')
                     continue
             except ClientError:
                 pass
@@ -70,7 +70,7 @@ def upload(full_path):
             response = client.put_object(Bucket=bucket_name, Key=file_key, Body=fp)
         etag = get_etag(response)
         resource_file_map[file_key] = etag
-        logger.info(f'uploaded {file_key}[{etag}] in {vendor}')
+        logger.info(f'Uploaded {file_key}[{etag}] in {vendor}')
 
 
 def listdir_iter(path):
@@ -89,15 +89,15 @@ def delete_not_exist_in_src():
             if (key := content.get('Key')) not in resource_file_map:
                 try:
                     client.delete_object(Bucket=bucket_name, Key=key)
-                    logger.info(f'deleted {key} in {vendor} success')
+                    logger.info(f'Deleted {key} in {vendor} success')
                 except ClientError as e:
-                    logger.error(f'deleted {key} in {vendor} failed')
+                    logger.error(f'Deleted {key} in {vendor} failed')
                     logger.exception(e)
 
 
 def main():
-    logger.info(f'working at {base_path}')
-    logger.info('loading resource lock file.')
+    logger.info(f'Working at {base_path}')
+    logger.info('Loading resource lock file.')
     global resource_file_map, resource_file_set
 
     if os.path.exists(resource_lock_file):
@@ -113,7 +113,7 @@ def main():
 
     with open(resource_lock_file, 'w') as fp:
         fp.write(json.dumps(resource_file_map, ensure_ascii=False, sort_keys=True, indent=2))
-    logger.info('successfully updated resource lock file.')
+    logger.info('Successfully updated resource lock file.')
 
     delete_not_exist_in_src()
 
