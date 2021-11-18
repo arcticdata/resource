@@ -82,6 +82,21 @@ def listdir_iter(path):
             listdir_iter(full_path)
 
 
+def delete():
+    for vendor, client in s3_clients.items():
+        resp = client.list_objects_v2(Bucket=bucket_name)
+        for content in resp.get('Contents', []):
+            if (key := content.get('Key')) not in resource_file_map:
+                try:
+                    response = client.delete_object(Bucket=bucket_name, Key=key)
+                    if response.get('DeleteMarker'):
+                        logger.info(f'deleted {key} in {vendor} success')
+                    else:
+                        logger.info(f'deleted {key} in {vendor} failed')
+                except ClientError as e:
+                    logger.exception(e)
+
+
 def main():
     logger.info(f'working at {base_path}')
     logger.info('loading resource lock file.')
@@ -101,6 +116,8 @@ def main():
     with open(resource_lock_file, 'w') as fp:
         fp.write(json.dumps(resource_file_map, ensure_ascii=False, sort_keys=True, indent=2))
     logger.info('successfully updated resource lock file.')
+
+    delete()
 
 
 def download_react(react_version: str):
