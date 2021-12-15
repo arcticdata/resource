@@ -1,0 +1,88 @@
+#--------------------------------------------
+# 单节点模式编排文件，下载方式：
+#
+# wget https://r.datarc.cn/deploy/20211215/docker-compose.yml
+# wget https://r.datarc.cn/deploy/20211215/clickhouse-config/clickhouse-metrika.xml
+# wget https://r.datarc.cn/deploy/20211215/clickhouse-config/clickhouse-config.xml
+# wget https://r.datarc.cn/deploy/20211215/clickhouse-config/clickhouse-users.xml
+#
+#--------------------------------------------
+version: '3.5'
+
+services:
+  postgres:
+    image: postgres:13-alpine
+    restart: always
+    env_file: .env
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+  redis:
+    image: redis:6-alpine
+    restart: always
+    command: [ "redis-server", "--save", '""', "--appendonly", "no" ]
+  clickhouse:
+    image: yandex/clickhouse-server
+    container_name: clickhouse-server
+    restart: always
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    ports:
+      - 8123:8123
+      - 9000:9000
+    volumes:
+      - ./clickhouse-metrika.xml:/etc/clickhouse-server/metrika.xml
+      - ./clickhouse-config.xml:/etc/clickhouse-server/config.xml
+      - ./clickhouse-users.xml:/etc/clickhouse-server/users.xml
+      - ./clickhouse-data:/var/lib/clickhouse
+      - ./clickhouse-log:/var/log/clickhouse-server
+  go-ws:
+    image: "${WS_IMAGE}"
+    restart: always
+    env_file: .env
+    volumes:
+      - ./dicts:/home/ubuntu/dicts
+      - /tmp:/tmp
+  web:
+    image: "${CORE_IMAGE}"
+    restart: always
+    env_file: .env
+    volumes:
+      - ./configs.py:/home/code/jiaogong/configs.py
+      - ./licence.key:/home/code/licence.key
+      - ./dicts:/home/code/dicts
+      - ./data:/home/code/data
+      - /tmp:/tmp
+    depends_on:
+      - postgres
+      - redis
+      - go-ws
+    ports:
+      - 8000:8000
+    command: "gunicorn jiaogong.wsgi -c gunicorn.conf.py"
+  beat:
+    image: "${CORE_IMAGE}"
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    env_file: .env
+    volumes:
+      - ./configs.py:/home/code/jiaogong/configs.py
+      - /tmp:/tmp
+    command: "celery --app=jiaogong beat --loglevel=INFO"
+  worker:
+    image: "${CORE_IMAGE}"
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    env_file: .env
+    volumes:
+      - ./configs.py:/home/code/jiaogong/configs.py
+      - ./licence.key:/home/code/licence.key
+      - ./dicts:/home/code/dicts
+      - ./data:/home/code/data
+      - /tmp:/tmp
+    command: "celery --app=jiaogong worker --loglevel=INFO --concurrency=5 --events --queues=celery"
