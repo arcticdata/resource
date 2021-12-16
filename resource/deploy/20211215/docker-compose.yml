@@ -18,7 +18,6 @@ services:
     command: [ "redis-server", "--save", '""', "--appendonly", "no" ]
   clickhouse:
     image: yandex/clickhouse-server
-    container_name: clickhouse-server
     restart: always
     ulimits:
       nofile:
@@ -28,7 +27,7 @@ services:
       - 8123:8123
       - 9000:9000
     volumes:
-      - ./clickhouse-data:/var/lib/clickhouse
+      - ./ch-data:/var/lib/clickhouse
   go-ws:
     image: "${WS_IMAGE}"
     restart: always
