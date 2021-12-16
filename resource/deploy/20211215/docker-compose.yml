@@ -2,10 +2,6 @@
 # 单节点模式编排文件，下载方式：
 #
 # wget https://r.datarc.cn/deploy/20211215/docker-compose.yml
-# wget https://r.datarc.cn/deploy/20211215/clickhouse-config/clickhouse-metrika.xml
-# wget https://r.datarc.cn/deploy/20211215/clickhouse-config/clickhouse-config.xml
-# wget https://r.datarc.cn/deploy/20211215/clickhouse-config/clickhouse-users.xml
-#
 #--------------------------------------------
 version: '3.5'
 
@@ -32,11 +28,7 @@ services:
       - 8123:8123
       - 9000:9000
     volumes:
-      - ./clickhouse-metrika.xml:/etc/clickhouse-server/metrika.xml
-      - ./clickhouse-config.xml:/etc/clickhouse-server/config.xml
-      - ./clickhouse-users.xml:/etc/clickhouse-server/users.xml
       - ./clickhouse-data:/var/lib/clickhouse
-      - ./clickhouse-log:/var/log/clickhouse-server
   go-ws:
     image: "${WS_IMAGE}"
     restart: always

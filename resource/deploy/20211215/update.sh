@@ -2,7 +2,7 @@
 #--------------------------------------------
 # 更新北极数据相关服务
 #
-# wget -O update.sh https://r.datarc.cn/deploy/20210909/update.sh && sh update.sh
+# wget -O update.sh https://r.datarc.cn/deploy/20211215/update.sh && sh update.sh
 #
 #--------------------------------------------
 
