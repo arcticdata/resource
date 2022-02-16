@@ -114,4 +114,4 @@ echo_info "------ 正在启动服务、请稍等 ------   \n"
 
 echo_info "------ 初始化服务后台账号、请稍等 ------   \n"
 a=$(echo ${PWD##*/})
-docker exec -it "${a}"_web_1 pipenv run python manage.py initialize
+docker exec -i "${a}"_web_1 pipenv run python manage.py initialize
