@@ -6,7 +6,7 @@
   "deploy/20211215/.env": "10b9ba06f4b128513646f566abd62740",
   "deploy/20211215/docker-compose": "8f68ae5d2334eecb0ee50b809b5cec58",
   "deploy/20211215/docker-compose.yml": "ce1b712c10439afb3c5823a6222afaca",
-  "deploy/20211215/install_online.sh": "5397677c92dc60321803c4db06cbea07",
+  "deploy/20211215/install_online.sh": "54715b71587484d9fe619becc326f0ec",
   "deploy/20211215/update.sh": "ea6273021ef03e115532cc9b72f78313",
   "echarts-custom/20190415/echarts.min.js": "f30ebeb5c6f6887e5554f523c39737da",
   "echarts-theme/macarons.js": "34e3c0706ae762a3fcc8f220a2853e6a",
