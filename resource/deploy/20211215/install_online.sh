@@ -67,8 +67,8 @@ if [[ $? -eq 0 ]]; then
 else
 	echo_warning "------ docker-compose 不存在 ------ \n"
 	echo_info "------ 准备安装 docker-compose ------ \n"
-        version=1.29.2
-# 官方原链接 curl -L https://github.com/docker/compose/releases/download/${version}/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+	version=1.29.2
+	# 官方原链接 curl -L https://github.com/docker/compose/releases/download/${version}/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 	wget -O docker-compose https://r.datarc.cn/deploy/20211215/docker-compose && mv docker-compose /usr/local/bin/docker-compose
 	chmod +x /usr/local/bin/docker-compose
 	ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
@@ -112,6 +112,9 @@ wget -O update.sh https://r.datarc.cn/deploy/20211215/update.sh && chmod +x upda
 echo_info "------ 正在启动服务、请稍等 ------   \n"
 ./update.sh
 
-echo_info "------ 初始化服务后台账号、请稍等 ------   \n"
+echo_info "------ 正在创建初始化文件、请稍等 ------   \n"
 a=$(echo ${PWD##*/})
-docker exec -i "${a}"_web_1 pipenv run python manage.py initialize
+echo "docker exec -it ${a}_web_1 pipenv run python manage.py initialize" >init.sh
+echo "rm -rf init.sh" >>init.sh
+
+echo_info "------ 请执行 bash $path/init.sh 初始化服务后台账号、请稍等 ------   \n"
