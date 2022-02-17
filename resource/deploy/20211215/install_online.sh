@@ -114,7 +114,4 @@ echo_info "------ 正在启动服务、请稍等 ------   \n"
 
 echo_info "------ 正在创建初始化文件、请稍等 ------   \n"
 a=$(echo ${PWD##*/})
-echo "docker exec -it ${a}_web_1 pipenv run python manage.py initialize" >init.sh
-echo "rm -rf init.sh" >>init.sh
-
-echo_info "------ 请执行 bash $path/init.sh 初始化服务后台账号、请稍等 ------   \n"
+echo_info "------ 请执行 cd $path && docker exec -it ${a}_web_1 pipenv run python manage.py initialize 初始化服务后台账号、请稍等 ------   \n"
