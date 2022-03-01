@@ -15,6 +15,7 @@
   "echarts/5.1.1/echarts.min.js": "af5ccc708f378e623b8aaf0acbb97d3a",
   "echarts/5.1.2/echarts.min.js": "0ca5fbe1243f87cffafe6af31261da27",
   "echarts/5.2.2/echarts.min.js": "c5ef426b883db4257694b21b88257a57",
+  "echarts/5.3.0/echarts-wordcloud.min.js": "9a060c5e7ca4ee5ac1faa7234036190b",
   "echarts/5.3.0/echarts.min.js": "5cde2b071978ffa22cadd9ec6e7551e0",
   "favicon.ico": "00eaf2cbb6d06294ce70ea95faa9e021",
   "files/同义词模板.csv": "ce6d655dec11ee33a668882330964fa9",
