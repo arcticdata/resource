@@ -29,4 +29,4 @@ echo_info "------ 添加 Nginx 公钥 ------ \n"
 wget http://nginx.org/keys/nginx_signing.key &&  apt-key add nginx_signing.key
 
 echo_info "------ 开始安装 Nginx ------ \n"
-apt update &&  apt install nginx -y
+apt update && apt install nginx -y
