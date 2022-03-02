@@ -1,5 +1,9 @@
 {
   "animate.css/3.7.0/animate.min.css": "c78e4003414fbf2814dc097a5e1c784a",
+  "deepin/get_docker.sh": "1ad9ef6b01fc5c1bc8b3ba109f84c181",
+  "deepin/get_nginx.sh": "10b8df54263c0c603d16ac49d49d9392",
+  "deepin/get_nodejs_16.sh": "f06ce5e7da881340fd7033f094fd21c1",
+  "deepin/nginx_signing.key": "016d27313adbf180e545ae9fadd11826",
   "deploy/20210909/.env": "c488fc2026fa5a9d68e3fb51ae6ea63b",
   "deploy/20210909/docker-compose.yml": "a9e46dc0c61d3c0c8f47c3ee80e9ebae",
   "deploy/20210909/update.sh": "b58cccb461c3c19b1cb6ae5fa79364f4",
