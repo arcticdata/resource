@@ -20,13 +20,10 @@ if [ "$(id -u)" -ne "0" ]; then
 fi
 
 echo_info "------ 开始设置 Nginx 源 ------ \n"
-cat >>/etc/apt/sources.list.d/nginx.list <<"EOF"
-deb http://nginx.org/packages/mainline/debian/ buster nginx
-deb-src http://nginx.org/packages/mainline/debian/ buster nginx
-EOF
+echo 'deb http://nginx.org/packages/mainline/debian/ buster nginx' >> /etc/apt/sources.list.d/nginx.list
 
 echo_info "------ 添加 Nginx 公钥 ------ \n"
-wget http://nginx.org/keys/nginx_signing.key &&  apt-key add nginx_signing.key
+wget https://r.datarc.cn/deepin/nginx_signing.key && apt-key add nginx_signing.key
 
 echo_info "------ 开始安装 Nginx ------ \n"
 apt update && apt install nginx -y
