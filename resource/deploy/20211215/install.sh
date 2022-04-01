@@ -123,7 +123,18 @@ if [ ! -d "${config_dir}" ]; then
 fi
 
 echo_info "------ 检查初始配置文件 ------ \n"
-cp "licence.key" "${config_dir}"
+if [ ! -f "${datarc_dir}/licence.key" ]; then
+  if [ -f "licence.key" ]; then
+    cp "licence.key" "${config_dir}"
+  fi
+fi
+
+if [ ! -f "${datarc_dir}/configs.py" ]; then
+  if [ -f "configs.py" ]; then
+    cp "configs.py" "${config_dir}"
+  fi
+fi
+
 config_files=("update.sh" "docker-compose.yml" ".env" "configs.py" "licence.key")
 for config_file in "${config_files[@]}"; do
   if [ ! -f "${config_dir}/${config_file}" ]; then
