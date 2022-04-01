@@ -123,7 +123,7 @@ if [ ! -d "${config_dir}" ]; then
 fi
 
 echo_info "------ 检查初始配置文件 ------ \n"
-if [ ! -f "${datarc_dir}/configs.py" ]; then
+if [ ! -f "${datarc_dir}/licence.key" ]; then
   if [ -f "configs.py" ]; then
     cp "licence.key" "${config_dir}"
   fi
