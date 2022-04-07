@@ -82,13 +82,6 @@ echo_info "------ 创建项目目录中 ------   \n"
 mkdir -p $path
 
 echo_info "------ 创建授权证书中 ------   \n"
-
-if [ ! -f "licence.key" ]; then
-	echo_info "------ 未找到北极数据授权证书、请将授权证书移动至当前目录 ... 三秒后退出 ------   \n"
-	sleep 3
-	exit 1
-fi
-
 if [ ! -f "${path}/licence.key" ]; then
   if [ -f "licence.key" ]; then
     cp "licence.key" "${path}"
@@ -96,13 +89,6 @@ if [ ! -f "${path}/licence.key" ]; then
 fi
 
 echo_info "------ 创建服务配置文件 ------   \n"
-
-if [ ! -f "configs.py" ]; then
-	echo_info "------ 未找到北极数据服务配置文件、请将服务配置文件移动至当前目录 ... 三秒后退出 ------   \n"
-	sleep 3
-	exit 1
-fi
-
 if [ ! -f "${path}/configs.py" ]; then
   if [ -f "configs.py" ]; then
     cp "configs.py" "${path}" && cd ${path}/
