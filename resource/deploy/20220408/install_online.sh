@@ -89,7 +89,11 @@ if [ ! -f "licence.key" ]; then
 	exit 1
 fi
 
-cp licence.key $path/
+if [ ! -f "${path}/licence.key" ]; then
+  if [ -f "licence.key" ]; then
+    cp "licence.key" "${path}"
+  fi
+fi
 
 echo_info "------ 创建服务配置文件 ------   \n"
 
@@ -99,7 +103,12 @@ if [ ! -f "configs.py" ]; then
 	exit 1
 fi
 
-cp configs.py $path/ && cd $path/
+if [ ! -f "${path}/configs.py" ]; then
+  if [ -f "configs.py" ]; then
+    cp "configs.py" "${path}" && cd ${path}/
+  fi
+fi
+
 
 echo_info "------ 正在拉取环境变量文件 ------   \n"
 wget -O .env https://r.datarc.cn/deploy/${datarc_version}/.env
@@ -114,5 +123,12 @@ echo_info "------ 正在启动服务、请稍等 ------   \n"
 ./update.sh
 
 echo_info "------ 正在创建初始化文件、请稍等 ------   \n"
+
+BUCKET=`cat ${path}/.env|grep S3_BUCKET|awk -F"[ = ]" '{print $2}'`
+if [ ! -f "${path}/${BUCKET}" ]; then
+  cd ${path}/minio-data && mkdir -p ${BUCKET}
+fi
+
 a=$(echo ${PWD##*/})
 echo_info "------ 请执行 cd $path && docker exec -it ${a}_web_1 pipenv run python manage.py initialize 初始化服务后台账号、请稍等 ------   \n"
+
