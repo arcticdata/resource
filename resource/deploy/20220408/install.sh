@@ -171,6 +171,12 @@ function execute_update_commands {
     echo_error "------ 未检测到服务容器 ------ \n"
   fi
 
+minio_passwd=`</dev/urandom tr -dc '12345!@#$%qwertQWERTasdfgASDFGzxcvbZXCVB' | head -c32;`
+grep -w MINIO_ROOT_PASSWORD= ${datarc_dir}/.env
+if [ $? -eq 0 ];then
+  sed -i "s%MINIO_ROOT_PASSWORD=%MINIO_ROOT_PASSWORD=$minio_passwd%g" ${datarc_dir}/.env
+fi
+
   echo_info "------ 重启北极数据服务 ------ \n"
   docker-compose up -d --remove-orphans --force-recreate
 }
