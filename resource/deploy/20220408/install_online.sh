@@ -106,10 +106,15 @@ echo_info "------ 正在拉取更新脚本 ------   \n"
 wget -O update.sh https://r.datarc.cn/deploy/${datarc_version}/update.sh && chmod +x update.sh
 
 echo_info "------ 正在启动服务、请稍等 ------   \n"
+minio_passwd=`</dev/urandom tr -dc '12345!@#$%qwertQWERTasdfgASDFGzxcvbZXCVB' | head -c32;`
+grep -w MINIO_ROOT_PASSWORD= ${path}/.env
+if [ $? -eq 0 ];then
+  sed -i "s%MINIO_ROOT_PASSWORD=%MINIO_ROOT_PASSWORD=$minio_passwd%g" ${path}/.env
+fi
+
 ./update.sh
 
 echo_info "------ 正在创建初始化文件、请稍等 ------   \n"
-
 BUCKET=`cat ${path}/.env|grep S3_BUCKET|awk -F"[ = ]" '{print $2}'`
 if [ ! -d "${path}/${BUCKET}" ]; then
   cd ${path}/minio-data && mkdir -p ${BUCKET}
