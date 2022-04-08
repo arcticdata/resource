@@ -118,7 +118,7 @@ BUCKET=`cat ${path}/.env|grep S3_BUCKET|awk -F"[ = ]" '{print $2}'`
 if [ ! -d "${path}/${BUCKET}" ]; then
   cd ${path}/minio-data && mkdir -p ${BUCKET}
 fi
-
+cd ${path}
 a=$(echo ${PWD##*/})
 echo_info "------ 请执行 cd $path && docker exec -it ${a}_web_1 pipenv run python manage.py initialize 初始化服务后台账号、请稍等 ------   \n"
 
