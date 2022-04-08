@@ -29,8 +29,6 @@ services:
     image: "${WS_IMAGE}"
     restart: always
     env_file: .env
-    volumes:
-      - ./dicts:/home/ubuntu/dicts
   minio:
     image: quay.io/minio/minio
     restart: always
@@ -48,7 +46,6 @@ services:
     volumes:
       - ./configs.py:/home/code/jiaogong/configs.py
       - ./licence.key:/home/code/licence.key
-      - ./dicts:/home/code/dicts
     depends_on:
       - postgres
       - redis
@@ -76,5 +73,4 @@ services:
     volumes:
       - ./configs.py:/home/code/jiaogong/configs.py
       - ./licence.key:/home/code/licence.key
-      - ./dicts:/home/code/dicts
     command: "celery --app=jiaogong worker --loglevel=INFO --concurrency=5 --events --queues=celery"

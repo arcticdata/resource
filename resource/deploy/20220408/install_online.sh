@@ -95,9 +95,14 @@ if [ ! -f "${path}/configs.py" ]; then
   fi
 fi
 
-
 echo_info "------ 正在拉取环境变量文件 ------   \n"
 wget -O .env https://r.datarc.cn/deploy/${datarc_version}/.env
+minio_user=`cat ${path}/.env|grep MINIO_ROOT_USER=|awk -F"[ = ]" '{print $2}'`
+minio_passwd=`</dev/urandom tr -dc '12345!@#$%qwertQWERTasdfgASDFGzxcvbZXCVB' | head -c32;`
+grep -w MINIO_ROOT_PASSWORD= ${path}/.env
+if [ $? -eq 0 ];then
+  sed -i "s%MINIO_ROOT_PASSWORD=%MINIO_ROOT_PASSWORD=$minio_passwd%g" ${path}/.env
+fi
 
 echo_info "------ 正在拉取编排文件 ------   \n"
 wget -O docker-compose.yml https://r.datarc.cn/deploy/${datarc_version}/docker-compose.yml
@@ -106,12 +111,6 @@ echo_info "------ 正在拉取更新脚本 ------   \n"
 wget -O update.sh https://r.datarc.cn/deploy/${datarc_version}/update.sh && chmod +x update.sh
 
 echo_info "------ 正在启动服务、请稍等 ------   \n"
-minio_passwd=`</dev/urandom tr -dc '12345!@#$%qwertQWERTasdfgASDFGzxcvbZXCVB' | head -c32;`
-grep -w MINIO_ROOT_PASSWORD= ${path}/.env
-if [ $? -eq 0 ];then
-  sed -i "s%MINIO_ROOT_PASSWORD=%MINIO_ROOT_PASSWORD=$minio_passwd%g" ${path}/.env
-fi
-
 ./update.sh
 
 echo_info "------ 正在创建初始化文件、请稍等 ------   \n"
@@ -123,3 +122,4 @@ fi
 a=$(echo ${PWD##*/})
 echo_info "------ 请执行 cd $path && docker exec -it ${a}_web_1 pipenv run python manage.py initialize 初始化服务后台账号、请稍等 ------   \n"
 
+echo_info "------ MinIO 账号：${minio_user} 密码：${minio_passwd} "
