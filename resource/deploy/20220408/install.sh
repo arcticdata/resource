@@ -149,7 +149,7 @@ fi
 
 cp -r -n "${config_dir}"/. "${datarc_dir}/"
 minio_user=`cat ${datarc_dir}/.env|grep MINIO_ROOT_USER=|awk -F"[ = ]" '{print $2}'`
-minio_passwd=`</dev/urandom tr -dc '12345!@#$%qwertQWERTasdfgASDFGzxcvbZXCVB' | head -c32;`
+minio_passwd=`</dev/urandom tr -dc '12345!@#qwertQWERTasdfgASDFGzxcvbZXCVB' | head -c32;`
 grep -w MINIO_ROOT_PASSWORD= ${datarc_dir}/.env
 if [ $? -eq 0 ];then
   sed -i "s%MINIO_ROOT_PASSWORD=%MINIO_ROOT_PASSWORD=$minio_passwd%g" ${datarc_dir}/.env
