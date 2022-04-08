@@ -111,7 +111,7 @@ echo_info "------ 正在启动服务、请稍等 ------   \n"
 echo_info "------ 正在创建初始化文件、请稍等 ------   \n"
 
 BUCKET=`cat ${path}/.env|grep S3_BUCKET|awk -F"[ = ]" '{print $2}'`
-if [ ! -f "${path}/${BUCKET}" ]; then
+if [ ! -d "${path}/${BUCKET}" ]; then
   cd ${path}/minio-data && mkdir -p ${BUCKET}
 fi
 

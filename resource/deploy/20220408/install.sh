@@ -184,7 +184,7 @@ fi
 
 function initialize() {
 BUCKET=`cat ${datarc_dir}/.env|grep S3_BUCKET|awk -F"[ = ]" '{print $2}'`
-if [ ! -f "${datarc_dir}/${BUCKET}" ]; then
+if [ ! -d "${datarc_dir}/${BUCKET}" ]; then
   cd ${datarc_dir}/minio-data && mkdir -p ${BUCKET}
 fi
   echo_info "如果您是初次安装，请前往 ${datarc_dir} 目录下："
