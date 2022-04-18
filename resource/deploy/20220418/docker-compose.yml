@@ -1,7 +1,7 @@
 #--------------------------------------------
 # 单节点模式编排文件，下载方式：
 #
-# wget https://r.datarc.cn/deploy/20220408/docker-compose.yml
+# wget https://r.datarc.cn/deploy/20220418/docker-compose.yml
 #--------------------------------------------
 version: '3.5'
 
@@ -45,7 +45,6 @@ services:
     env_file: .env
     volumes:
       - ./configs.py:/home/code/jiaogong/configs.py
-      - ./licence.key:/home/code/licence.key
     depends_on:
       - postgres
       - redis
@@ -72,5 +71,4 @@ services:
     env_file: .env
     volumes:
       - ./configs.py:/home/code/jiaogong/configs.py
-      - ./licence.key:/home/code/licence.key
     command: "celery --app=jiaogong worker --loglevel=INFO --concurrency=5 --events --queues=celery"

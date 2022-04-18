@@ -196,6 +196,20 @@ function stop {
   echo_info "------ 正在停止 北极数据服务 请稍等 ------ \n"
   cd "${datarc_dir}" && docker-compose stop
 }
+
+################################### update
+function update() {
+if [ ! -f "${datarc_dir}/image.tar.gz" ]; then
+    echo_error "------ 将镜像文件移动至 ${datarc_dir} 目录 ------ \n"
+    exit 1
+else
+    stop
+    echo_info "------ 正在更新 北极数据服务 请稍等 ------ \n"
+    docker load --input "image.tar.gz"
+    echo_info "------  北极数据镜像 加载成功 请稍后 ------ \n"
+fi
+}
+
 ################################### help
 function help() {
   echo "$(gettext 'Arctic data Deployment Management Script')"
@@ -212,6 +226,7 @@ function help() {
   echo " *start             $(gettext 'Start   Arctic data')"
   echo "  stop              $(gettext 'Stop    Arctic data')"
   echo " *restart           $(gettext 'Restart Arctic data')"
+  echo "  update            $(gettext 'Update  Arctic data')"
   echo
 
 }
@@ -232,6 +247,11 @@ function main(){
     ;;
   stop)
     stop
+    ;;
+  update)
+    initialize
+    update
+    restart
     ;;
   help)
     help
