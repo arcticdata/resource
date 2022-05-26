@@ -33,6 +33,7 @@
   "deploy/20220517/datarc.sh": "d4aab6edb812f1088138f7a52823e40e",
   "deploy/20220517/docker-compose.yml": "70df0412ce59a82f1ad9927007ec1294",
   "deploy/20220517/install_online.sh": "a49c8684b7a8838ffb78fe708130c1a1",
+  "deploy/20220517/k8s.yml": "3b045405cf32028a1f1823a723c03877",
   "deploy/docker-compose": "8f68ae5d2334eecb0ee50b809b5cec58",
   "echarts-custom/20190415/echarts.min.js": "f30ebeb5c6f6887e5554f523c39737da",
   "echarts-theme/macarons.js": "34e3c0706ae762a3fcc8f220a2853e6a",
