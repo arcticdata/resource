@@ -1,5 +1,5 @@
 #!/bin/bash
-# 执行命令 bash install_online.sh --path=<路径> --username=<用户名> --password=<密码> --image_version=<vX.X.X>  
+# 执行命令 bash install_online.sh --path=<路径> --username=<用户名> --password=<密码> --image_version=<X.X.X>  
 # 说明 --username --password 为必填值
 ###############  --path  可设置参数 ############################################
 datarc_verion=20220723
