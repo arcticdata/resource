@@ -9,7 +9,7 @@ function main() {
   path=$(echo "$ARGS" | getNamedArg path) ; [ ! $path ] && path='/opt/datarc'
   username=$(echo "$ARGS" | getNamedArg username)
   password=$(echo "$ARGS" | getNamedArg password)
-  image_version=$(echo "$ARGS" | getNamedArg image_version) ; [ ! $image_version ] && image_version='v2.8.0'
+  image_version=$(echo "$ARGS" | getNamedArg image_version) ; [ ! $image_version ] && image_version='2.8.0'
 }
 function getArgs() {
   for arg in "$@"; do
@@ -127,7 +127,7 @@ POSTGRES_DB=postgres
 PGDATA=/var/lib/postgresql/data
 
 # 服务镜像 , 更新时请正确设置成对应版本号
-CORE_IMAGE=dockerhub.qingcloud.com/datarc/core:${image_version}
+CORE_IMAGE=dockerhub.qingcloud.com/datarc/core:v${image_version}
 WS_IMAGE=dockerhub.qingcloud.com/datarc/go-ws:latest
 
 # 其他设置 , 无需修改
