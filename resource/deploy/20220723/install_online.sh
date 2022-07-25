@@ -1,14 +1,14 @@
 #!/bin/bash
-# 执行命令 bash install_online.sh --path=<路径> --user=<用户名> --passwd=<密码> --image_version=<vX.X.X> 
+# 执行命令 bash install_online.sh --path=<路径> --username=<用户名> --password=<密码> --image_version=<vX.X.X>  
 ###############  --path  可设置参数 ############################################
 datarc_verion=20220723
 datarc_dir=
 function main() {
   ARGS=$(getArgs "$@")
-  path=$(echo "$ARGS" | getNamedArg path)
-  user=$(echo "$ARGS" | getNamedArg user)
-  passwd=$(echo "$ARGS" | getNamedArg passwd)
-  image_version=$(echo "$ARGS" | getNamedArg image_version)
+  path=$(echo "$ARGS" | getNamedArg path) ; [ ! $path ] && path='/opt/datarc'
+  username=$(echo "$ARGS" | getNamedArg username)
+  password=$(echo "$ARGS" | getNamedArg password)
+  image_version=$(echo "$ARGS" | getNamedArg image_version) ; [ ! $image_version ] && image_version='v2.8.0'
 }
 function getArgs() {
   for arg in "$@"; do
@@ -47,6 +47,7 @@ function echo_error() {
   local what=$*
   echo -e "\e[1;31m ${what} \e[0m"
 }
+
 ###############  开始安装服务   ############################################
 HOSTNAME_IP=$(hostname -I | awk '{print $1}')
 function install() {
@@ -80,7 +81,7 @@ function install() {
   fi
 
   echo_info "------ 正在登录私有仓库中 ------   \n"
-  docker login --username=$user --password=$passwd dockerhub.qingcloud.com
+  docker login --username=$username --password=$password dockerhub.qingcloud.com
 
   echo_info "------ 创建项目目录中 ------   \n"
   mkdir -p $path
@@ -244,6 +245,7 @@ function initialize() {
 
   (cp ${datarc_dir}/datarc.sh /usr/bin/datarc)
 }
+
 ###################################  restart
 function restart {
   echo_info "------ 启动北极数据服务 ------ \n"
