@@ -1,0 +1,492 @@
+# 文件说明：
+# - 所有资源在单独的 namespace 下，需要重建可以删除 namespace 后重新 apply
+# - 所有提供接口的服务都有对应 service，命名为 <name>-svc，端口与服务保持一致
+# - 服务配置采用环境变量的方式，写在 datarc-env-configuration 中
+# - 应用配置采用文件的方式，写在 datarc-file-configuration
+# - 视部署消耗资源，可以适当增加 resource 限制以及 replica 数量
+
+# 使用单独的 namespace
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: datarc
+...
+
+# 环境变量配置
+# 配置中 127.0.0.1 需要替换为实际 IP 或者域名
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: datarc-env-configuration
+  namespace: datarc
+data:
+  # 访问 URL ，按照实际 <IP:端口>，<域名>进行修改，需要保证这个地址可以访问到部署的 Web 服务，参考案例如下：
+  # URL: "http://your-domain.com/"
+  # URL: "http://127.0.0.1:8000/"
+  # URL: "http://web.datarc:8000/"
+  URL: "http://web-svc.datarc:8000"
+  # MinIO 相关配置 ，MINIO_ROOT_PASSWORD ，首次安装需要生成随机字符串填入，MINIO_SERVER_URL 为 api 接口，MINIO_BROWSER_REDIRECT_URL 为 web 界面，参考案例如下：
+  # MINIO_SERVER_URL: "http://127.0.0.1:9000/"
+  # MINIO_BROWSER_REDIRECT_URL: "http://127.0.0.1:9001/"
+  MINIO_SERVER_URL: ""
+  MINIO_BROWSER_REDIRECT_URL: ""
+  MINIO_ROOT_USER: "datarc"
+  MINIO_ROOT_PASSWORD: ""
+  MINIO_BUCKET: "datarc"
+  # 对象存储 S3 协议 相关配置，如使用自带 MinIO 服务，默认存储桶为 datarc ，请与上面设置 MinIO 参数保持一致，参考案例如下：
+  # S3_ENDPOINT=http://127.0.0.1:9000/
+  S3_ENDPOINT: ""
+  S3_SECRET_ID: "datarc"
+  S3_SECRET_KEY: ""
+  S3_REGION: "datarc"
+  S3_BUCKET: "datarc"
+  # PostgreSQL 相关配置
+  POSTGRES_USER: "postgres"
+  POSTGRES_PASSWORD: "example"
+  POSTGRES_DB: "postgres"
+  PGDATA: "/var/lib/postgresql/data"
+  # 其他设置，无需修改
+  GIN_MODE: "release"
+  PRODUCTION: "true"
+  C_FORCE_ROOT: "true"
+...
+
+# 文件配置
+# 开放的配置参数见文档
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: datarc-file-configuration
+  namespace: datarc
+data:
+  configs.py: |
+    # 网站地址
+    URL = "https://demo.datarc.cn"
+    # 数据库配置
+    DATABASES = {
+      "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "HOST": "postgres-svc.datarc",
+        "PORT": "5432",
+        "USER": "postgres",
+        "PASSWORD": "example",
+        "NAME": "postgres",
+      },
+      "read": {
+        "ENGINE": "django.db.backends.postgresql",
+        "HOST": "postgres-svc.datarc",
+        "PORT": "5432",
+        "USER": "postgres",
+        "PASSWORD": "example",
+        "NAME": "postgres",
+      },
+    }
+    # 缓存配置
+    CACHES = {
+      "global": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis-svc.datarc:6379/1",
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+      },
+    }
+    # Celery 配置
+    CELERY_BROKER_URL = "redis://redis-svc.datarc:6379/2"
+    CELERY_RESULT_BACKEND = "redis://redis-svc.datarc:6379/3"
+    CELERY_TASK_ANNOTATIONS = {"*": {"max_retries": 10}}
+...
+
+# 业务数据库 postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: datarc
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  serviceName: postgres
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: postgres
+        image: postgres:13-alpine
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: datarc-env-configuration
+        ports:
+        - containerPort: 5432
+# # 启用 volumeMounts 可以持久化数据
+#        volumeMounts:
+#        - name: data
+#          mountPath: /var/lib/postgresql/data
+#          subPath: data
+#  volumeClaimTemplates:
+#  - metadata:
+#      name: data
+#    spec:
+#      storageClassName: alicloud-disk-efficiency
+#      accessModes:
+#      - ReadWriteOnce
+#      resources:
+#        requests:
+#          storage: 20Gi
+...
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-svc
+  namespace: datarc
+spec:
+  selector:
+    app: postgres
+  ports:
+  - port: 5432
+...
+
+# 缓存数据库 redis
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: datarc
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  serviceName: redis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: redis
+        image: redis:6-alpine
+        imagePullPolicy: IfNotPresent
+        command: [ "redis-server", "--save", '""', "--appendonly", "yes" ]
+        ports:
+        - containerPort: 6379
+# # 启用 volumeMounts 可以持久化数据
+#        volumeMounts:
+#        - name: data
+#          mountPath: /data
+#  volumeClaimTemplates:
+#  - metadata:
+#      name: data
+#    spec:
+#      storageClassName: alicloud-disk-efficiency
+#      accessModes:
+#      - ReadWriteOnce
+#      resources:
+#        requests:
+#          storage: 20Gi
+...
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-svc
+  namespace: datarc
+spec:
+  selector:
+    app: redis
+  ports:
+  - port: 6379
+...
+
+# 分析数据库 clickhouse
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: clickhouse
+  namespace: datarc
+spec:
+  selector:
+    matchLabels:
+      app: clickhouse
+  serviceName: clickhouse
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: clickhouse
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: clickhouse
+        image: yandex/clickhouse-server
+        imagePullPolicy: IfNotPresent
+# # 启用 volumeMounts 可以持久化数据
+#        volumeMounts:
+#        - name: data
+#          mountPath: /var/lib/clickhouse
+#  volumeClaimTemplates:
+#  - metadata:
+#      name: data
+#    spec:
+#      storageClassName: alicloud-disk-efficiency
+#      accessModes:
+#      - ReadWriteOnce
+#      resources:
+#        requests:
+#          storage: 20Gi
+...
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clickhouse-svc
+  namespace: datarc
+spec:
+  selector:
+    app: clickhouse
+  ports:
+  - name: http
+    port: 8123
+  - name: native
+    port: 9000
+...
+
+# 文件存储 minio
+# 默认文件上传端口为 9000, 管理后台端口为 9001
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: minio
+  namespace: datarc
+spec:
+  selector:
+    matchLabels:
+      app: minio
+  serviceName: minio
+  template:
+    metadata:
+      labels:
+        app: minio
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: minio
+        image: quay.io/minio/minio
+        imagePullPolicy: IfNotPresent
+        args: [ "server", "/data", "--console-address", ":9001" ]
+        envFrom:
+        - configMapRef:
+            name: datarc-env-configuration
+        readinessProbe:
+          httpGet:
+            path: /minio/health/ready
+            port: 9000
+          initialDelaySeconds: 120
+          periodSeconds: 20
+        livenessProbe:
+          httpGet:
+            path: /minio/health/live
+            port: 9000
+          initialDelaySeconds: 120
+          periodSeconds: 20
+        ports:
+        - containerPort: 9000
+        - containerPort: 9001
+# # 启用 volumeMounts 可以持久化数据
+#        volumeMounts:
+#        - name: data
+#          mountPath: /data
+#  volumeClaimTemplates:
+#  - metadata:
+#      name: data
+#    spec:
+#      storageClassName: alicloud-disk-efficiency
+#      accessModes:
+#      - ReadWriteOnce
+#      resources:
+#        requests:
+#          storage: 20Gi
+...
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-svc
+  namespace: datarc
+spec:
+  selector:
+    app: minio
+  ports:
+  - port: 9000
+    name: api
+  - port: 9001
+    name: console
+...
+
+# 分词服务
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-ws
+  namespace: datarc
+spec:
+  selector:
+    matchLabels:
+      app: go-ws
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: go-ws
+    spec:
+      containers:
+      - name: app
+        image: dockerhub.qingcloud.com/datarc/go-ws:latest
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: datarc-env-configuration
+...
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-ws-svc
+  namespace: datarc
+spec:
+  selector:
+    app: go-ws
+  ports:
+  - port: 8000
+...
+
+# web 服务
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: datarc
+spec:
+  selector:
+    matchLabels:
+      app: web
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - name: app
+        image: dockerhub.qingcloud.com/datarc/core:latest
+        imagePullPolicy: Always
+        args: [ "gunicorn", "jiaogong.wsgi", "-c", "gunicorn.conf.py" ]
+        envFrom:
+        - configMapRef:
+            name: datarc-env-configuration
+        volumeMounts:
+        - name: datarc-file
+          mountPath: /home/code/jiaogong/configs.py
+          subPath: configs.py
+      volumes:
+      - name: datarc-file
+        configMap:
+          name: datarc-file-configuration
+...
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-svc
+  namespace: datarc
+spec:
+  selector:
+    app: web
+  ports:
+  - port: 8000
+...
+
+# worker 服务
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: datarc
+spec:
+  selector:
+    matchLabels:
+      app: worker
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+      - name: app
+        image: dockerhub.qingcloud.com/datarc/core:latest
+        imagePullPolicy: Always
+        args: [ "celery", "--app=jiaogong", "worker", "--loglevel=INFO", "--concurrency=5", "--events", "--queues=celery" ]
+        envFrom:
+        - configMapRef:
+            name: datarc-env-configuration
+        volumeMounts:
+        - name: datarc-file
+          mountPath: /home/code/jiaogong/configs.py
+          subPath: configs.py
+      volumes:
+      - name: datarc-file
+        configMap:
+          name: datarc-file-configuration
+...
+
+# beat 服务
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beat
+  namespace: datarc
+spec:
+  selector:
+    matchLabels:
+      app: beat
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: beat
+    spec:
+      containers:
+      - name: app
+        image: dockerhub.qingcloud.com/datarc/core:latest
+        imagePullPolicy: Always
+        args: [ "celery", "--app=jiaogong", "beat", "--loglevel=INFO" ]
+        envFrom:
+        - configMapRef:
+            name: datarc-env-configuration
+        volumeMounts:
+        - name: datarc-file
+          mountPath: /home/code/jiaogong/configs.py
+          subPath: configs.py
+      volumes:
+      - name: datarc-file
+        configMap:
+          name: datarc-file-configuration
+...
