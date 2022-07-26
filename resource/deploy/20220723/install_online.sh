@@ -220,9 +220,7 @@ services:
 EOF
 
   cd ${path} && wget -O datarc.sh https://r.datarc.cn/deploy/${datarc_verion}/install_online.sh
-
   sed -i "s%# datarc_dir=%datarc_dir=${path}%" ${path}/datarc.sh
-
   (chmod +x ${path}/datarc.sh && cp ${path}/datarc.sh /usr/bin/datarc)
   datarc start
   echo_info "------ MinIO 账号：${minio_user} 密码：${minio_password} "
