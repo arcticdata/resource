@@ -3,7 +3,8 @@
 # 说明 --username --password 为必填值
 ###############  --path  可设置参数 ############################################
 datarc_verion=20220723
-datarc_dir=
+# datarc_dir 用于设置程序的安装目录。取消注释后正确设置。
+# datarc_dir=
 function main() {
   ARGS=$(getArgs "$@")
   path=$(echo "$ARGS" | getNamedArg path) ; [ ! $path ] && path='/opt/datarc'
@@ -220,7 +221,8 @@ EOF
 
   cd ${path} && wget -O datarc.sh https://r.datarc.cn/deploy/${datarc_verion}/install_online.sh
 
-  sed -i "6s%datarc_dir=%datarc_dir=${path}%" ${path}/datarc.sh
+  sed -i "s%# datarc_dir=%datarc_dir=${path}%" ${path}/datarc.sh
+
   (chmod +x ${path}/datarc.sh && cp ${path}/datarc.sh /usr/bin/datarc)
   datarc start
   echo_info "------ MinIO 账号：${minio_user} 密码：${minio_password} "
