@@ -1,4 +1,4 @@
-![Arctic Data](https://r.datarc.cn/logo/1380x296/blue.png)
+![Arctic Data](https://r.datarc.cn/brand/ARCTIC_DATA_2022.png)
 
 # Arctic Data CDN resources
 

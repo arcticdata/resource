@@ -1,5 +1,7 @@
 {
   "animate.css/3.7.0/animate.min.css": "c78e4003414fbf2814dc097a5e1c784a",
+  "brand/ARCTIC_DATA_2022.png": "cc376bca1374fefa57822d16bf2c8980",
+  "brand/LOGO_2022.png": "f7e772747389faa520d0f0b6bd3470ca",
   "deepin/get_docker.sh": "1ad9ef6b01fc5c1bc8b3ba109f84c181",
   "deepin/get_nginx.sh": "10b8df54263c0c603d16ac49d49d9392",
   "deepin/get_nodejs_16.sh": "f06ce5e7da881340fd7033f094fd21c1",
@@ -34,7 +36,7 @@
   "deploy/20220517/docker-compose.yml": "70df0412ce59a82f1ad9927007ec1294",
   "deploy/20220517/install_online.sh": "a49c8684b7a8838ffb78fe708130c1a1",
   "deploy/20220517/k8s.yml": "3b045405cf32028a1f1823a723c03877",
-  "deploy/20220723/install_online.sh": "624cbd8ef3896bed58a33249b193ca90",
+  "deploy/20220723/install_online.sh": "f32c69f3eca23a78af4df9169e876049",
   "deploy/20220723/k8s.yml": "3b045405cf32028a1f1823a723c03877",
   "deploy/docker-compose": "8f68ae5d2334eecb0ee50b809b5cec58",
   "echarts-custom/20190415/echarts.min.js": "f30ebeb5c6f6887e5554f523c39737da",
