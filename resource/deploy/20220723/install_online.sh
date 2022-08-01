@@ -174,6 +174,8 @@ services:
     image: "${WS_IMAGE}"
     restart: always
     env_file: .env
+    depends_on:
+      - minio
   minio:
     image: quay.io/minio/minio
     restart: always
@@ -203,6 +205,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - go-ws
     env_file: .env
     volumes:
       - ./configs.py:/home/code/jiaogong/configs.py
