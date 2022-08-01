@@ -196,6 +196,7 @@ services:
       - postgres
       - redis
       - go-ws
+      - clickhouse
     ports:
       - 8000:8000
     command: "gunicorn jiaogong.wsgi -c gunicorn.conf.py"
@@ -216,6 +217,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - clickhouse
     env_file: .env
     volumes:
       - ./configs.py:/home/code/jiaogong/configs.py
