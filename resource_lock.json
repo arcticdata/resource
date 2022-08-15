@@ -196,6 +196,8 @@
   "react/v16.8.3/react.production.min.js": "698114f22db5a3585658c1c2489be390",
   "react/v17.0.1/react-dom.production.min.js": "41bd7a0c6d29a900adfbe4da149941b5",
   "react/v17.0.1/react.production.min.js": "0da24faef1b203057592c836d1e60ece",
+  "react/v18.2.0/react-dom.production.min.js": "64141792105ea4861f9f33294d65ab81",
+  "react/v18.2.0/react.production.min.js": "d86dcdbfed4c273c4742744941259902",
   "slatejs/v0.57.2/slate-react.min.js": "67e93cd03781481ea385b3546319ddaf",
   "slatejs/v0.57.2/slate.min.js": "0b2036b54f0dcbbbf8addb7015cbba15"
 }
