@@ -123,6 +123,8 @@
   "geo_data/710000.json": "ddddcf634e89e3303df90de4266e55fa",
   "geo_data/810000.json": "9422ccd0084ff5bd76b81b84993d8e10",
   "geo_data/820000.json": "e0f5921276692402a5b9b3c7605ae420",
+  "gpg/caddy_stable.key": "2d4a43cd25514f24ddf35467d6abfe5f",
+  "gpg/nginx.key": "016d27313adbf180e545ae9fadd11826",
   "icon/12x18/down.png": "7c581f5d1f20d856c9a133e576ebceae",
   "icon/12x18/up.png": "d469f205d96140ed453ba218cc181636",
   "icon/20x20/beian.png": "d0289dc0a46fc5b15b3363ffa78cf6c7",
