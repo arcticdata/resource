@@ -173,6 +173,7 @@ services:
   clickhouse:
     image: "${REPO_URL}clickhouse-server:22.8"
     restart: always
+    privileged: true
     ulimits:
       nofile:
         soft: 262144
