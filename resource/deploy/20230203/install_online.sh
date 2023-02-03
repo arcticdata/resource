@@ -2,7 +2,7 @@
 # 执行命令 bash install_online.sh --path=<路径> --username=<用户名> --password=<密码> --core_version=<X.X.X> --ws_version=<X.X.X> 
 # 说明 --username --password 为必填值
 ###############  --path  可设置参数 ############################################
-datarc_verion=20221024
+datarc_verion=20230203
 WEB_PORT=8000
 MINIO_PORT=9000
 # datarc_dir 用于设置程序的安装目录。取消注释后正确设置。
