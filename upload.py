@@ -154,6 +154,6 @@ def download_echarts(version: str):
 
 
 if __name__ == '__main__':
-    # download_react("18.2.0")
+    download_react("18.3.0")
     # download_echarts("5.4.2")
     main()
