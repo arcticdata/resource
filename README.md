@@ -4,5 +4,6 @@
 
 [https://r.datarc.cn/](https://r.datarc.cn/)
 
-__upload resources__
-> pipenv run python upload.py
+## Upload resources
+
+> uv run python upload.py
