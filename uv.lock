@@ -25,7 +25,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "boto3" },
+    { name = "boto3", specifier = "==1.43.32" },
     { name = "httpx2", extras = ["http2"], specifier = "==2.4.0" },
 ]
 
