@@ -55,6 +55,7 @@
   "echarts/5.4.0/echarts.min.js": "24866f605f73dde07a5013fa0d0848b4",
   "echarts/5.4.1/echarts.min.js": "a6b355adc6e9634ca5c37598042b13d5",
   "echarts/5.4.2/echarts.min.js": "6f114043a370ef8abe89d339954758bc",
+  "echarts/5.4.3/ecStat.min.js": "4d040284130eda3ad8b586aab6402350",
   "echarts/5.4.3/echarts-gl.min.js": "1ce059b4fea2775612c8d621041db3da",
   "echarts/5.4.3/echarts-wordcloud.min.js": "9a060c5e7ca4ee5ac1faa7234036190b",
   "echarts/5.4.3/echarts.min.js": "710c7b9eee37884740dcd5a97f5b3a7b",
