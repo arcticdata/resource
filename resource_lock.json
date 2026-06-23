@@ -217,5 +217,6 @@
   "react/v18.3.0/react.production.min.js": "eb71c81d90708c36f02386e4cbc59f16",
   "slatejs/v0.57.2/slate-react.min.js": "67e93cd03781481ea385b3546319ddaf",
   "slatejs/v0.57.2/slate.min.js": "0b2036b54f0dcbbbf8addb7015cbba15",
-  "xlsx-0.20.0/xlsx.full.min.js": "0b2f539797f92d35c6394274818f2c22"
+  "xlsx-0.20.0/xlsx.full.min.js": "0b2f539797f92d35c6394274818f2c22",
+  "xlsx-0.20.2/xlsx.full.min.js": "50d3c495c9358a6196878296d2644eab"
 }
